@@ -11,7 +11,6 @@ from private_config import KEYS
 __author__ = 'regulate@gmail.com'
 __version__ = '0.1.0'
 
-
 class SponsorCrawler(MicroCrawler):
     """
     Crawl streams from a specific sponsor.
@@ -65,7 +64,7 @@ if __name__ == '__main__':
     # Required positional argument
     parser.add_argument("-s", "--sponsor", action="store", dest="sponsor", help="Crawl sponsored streams.")
     parser.add_argument("-g", "--generic", action="store_true", dest="generic", help="Crawl generically.")
-    parser.add_argument("-k", "--key", action="store", dest="key", help="Crawl using key.")
+    parser.add_argument("-k", "--key", action="store", dest="key", help=f"Crawl using key ID. Available keys: {list(KEYS.keys())})")
     # Optional verbosity counter (eg. -v, -vv, -vvv, etc.)
     parser.add_argument(
         "-v",
