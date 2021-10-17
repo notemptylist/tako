@@ -10,4 +10,4 @@ RUN mkdir /tako
 WORKDIR /tako
 COPY . .
 
-CMD [ "python3", "./tako.py", "-g", "-k", "CLASSY_CAMEL" ]
+CMD ["/tako/launcher.sh"]
