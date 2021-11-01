@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Crawl streams
+Crawl Streams on microprediction.org
 """
 import sys
 import argparse
 from microprediction import MicroCrawler
-
 from private_config import KEYS
+from proph import ProphetCrawler
 
 __author__ = 'regulate@gmail.com'
 __version__ = '0.1.0'
@@ -25,7 +25,12 @@ class SponsorCrawler(MicroCrawler):
         """
         self.sponsor = sponsor
         self._sponsored_streams.extend([x[0] for x in self.get_sponsors().items() if x[1] == self.sponsor])
-        return self._sponsored_streams 
+        return self._sponsored_streams
+
+    def include_sponsor(self, sponsor=None, **ignore):
+        """ Override this as you see fit to select streams for your crawler """
+        spons = ['e3b1055033076108b4279c473cde3a67', '0ffca579005ef5d8757270f007c4db76']
+        return sponsor in spons
 
     def include_stream(self, name=None, **ignore):
         """
@@ -44,6 +49,11 @@ def crawl_generic(write_key):
     mc.set_email(__author__)
     mc.run()
 
+def prophet_crawler(write_key):
+    pc = ProphetCrawler(write_key=write_key, mine=True)
+    pc.set_email(__author__)
+    pc.run(withdraw_all=False)
+
 def main(args):
     print(args)
     try:
@@ -51,6 +61,9 @@ def main(args):
     except KeyError:
         print("Specified key id is invalid")
         sys.exit(1)
+
+    if args.prophet and args.key:
+        prophet_crawler(key)
 
     if args.sponsor and args.key:
         crawl_sponsored(args.sponsor, key)
@@ -64,6 +77,7 @@ if __name__ == '__main__':
     # Required positional argument
     parser.add_argument("-s", "--sponsor", action="store", dest="sponsor", help="Crawl sponsored streams.")
     parser.add_argument("-g", "--generic", action="store_true", dest="generic", help="Crawl generically.")
+    parser.add_argument("-p", "--prophet", action="store_true", dest="prophet", help="Crawl using fbprophet.")
     parser.add_argument("-k", "--key", action="store", dest="key", help=f"Crawl using key ID. Available keys: {list(KEYS.keys())})")
     # Optional verbosity counter (eg. -v, -vv, -vvv, etc.)
     parser.add_argument(
