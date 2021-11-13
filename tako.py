@@ -45,6 +45,7 @@ def crawl_generic(write_key):
 
 def series_crawler(write_key):
     sc = SeriesCrawler(write_key=write_key)
+    sc.set_email(__author__)
     sc.run()
 
 def main(args):
