@@ -31,8 +31,8 @@ class SeriesCrawler(MicroCrawler):
         #'e3b1055033076108b4279c473cde3a67', '0ffca579005ef5d8757270f007c4db76']
         return sponsor in spons
 
-    def exclude_stream(self, name=None, **ignore):
-        return '~' in name
+#    def exclude_stream(self, name=None, **ignore):
+#        return '~' in name
 
     def include_stream(self, name=None, **ignore):
         return 'electricity' in name
@@ -50,15 +50,16 @@ class SeriesCrawler(MicroCrawler):
         plt.close()
         print(f"--- You have {delay} seconds to return something.")
         before = dt.now()
-
         # assuming 5min frequency
         freq = "5T"
         df.index = df.index.to_period(freq)
-        model = ARIMA(df, order=(3, 2, 1), freq=freq)
+
+        train = df[:-sample_size]
+        test = df[-sample_size:]
+        model = ARIMA(train, order=(3, 2, 1), freq=freq)
         model_fit = model.fit()
-        print(df)
         print(model_fit.summary())
-        yhats = model_fit.predict(start=nlags-sample_size, end=nlags, dynamic=False)
+        yhats = model_fit.predict(start=nlags, end=nlags+sample_size, dynamic=False)
         yhats.plot(title='Predicted')
         plt.savefig(plotname('predicted.png'))
         plt.close()
