@@ -18,12 +18,13 @@ class SponsorCrawler(MicroCrawler):
         self._sponsored_streams = []
         super().__init__(**kwargs)
 
-    def sync_sponsored_streams(self, sponsor):
+    def sync_sponsored_streams(self, sponsors):
         """
         Populate a local list of stream names with the specified sponsor.
         """
-        self.sponsor = sponsor
-        self._sponsored_streams.extend([x[0] for x in self.get_sponsors().items() if x[1] == self.sponsor])
+        self.sponsor = sponsors
+        self._sponsored_streams.extend([x[0] for x in self.get_sponsors().items() if x[1] in self.sponsor])
+        print(f'Sponsored streams: {self._sponsored_streams}')
         return self._sponsored_streams
 
     def include_stream(self, name=None, **ignore):
@@ -32,9 +33,9 @@ class SponsorCrawler(MicroCrawler):
         """
         return name in self._sponsored_streams
 
-def crawl_sponsored(sponsor, write_key):
+def crawl_sponsored(sponsors, write_key):
     mc = SponsorCrawler(write_key=write_key)
-    mc.sync_sponsored_streams(sponsor)
+    mc.sync_sponsored_streams(sponsors)
     mc.set_email(__author__)
     mc.run()
 
@@ -58,8 +59,8 @@ def main(args):
 
     if args.series and args.key:
         series_crawler(key)
-    if args.sponsor and args.key:
-        crawl_sponsored(args.sponsor, key)
+    if args.sponsors and args.key:
+        crawl_sponsored(args.sponsors, key)
 
     if args.generic:
         crawl_generic(key)
@@ -68,7 +69,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Required positional argument
-    parser.add_argument("-s", "--sponsor", action="store", dest="sponsor", help="Crawl sponsored streams.")
+    parser.add_argument("-s", "--sponsors", nargs="+", dest="sponsors", help="Crawl sponsored streams.")
     parser.add_argument("-g", "--generic", action="store_true", dest="generic", help="Crawl generically.")
     parser.add_argument("-p", "--prophet", action="store_true", dest="prophet", help="Crawl using fbprophet.")
     parser.add_argument("-t", "--series", action="store_true", dest="series", help="Crawl using TSA libraries.")
