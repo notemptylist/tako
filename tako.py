@@ -16,7 +16,10 @@ class SponsorCrawler(MicroCrawler):
     """
     def __init__(self, **kwargs):
         self._sponsored_streams = []
+
         super().__init__(**kwargs)
+        self.DELAYS = [3555]
+        print(self.DELAYS)
 
     def sync_sponsored_streams(self, sponsors):
         """
@@ -31,6 +34,8 @@ class SponsorCrawler(MicroCrawler):
         """
         Filter by sponsor.
         """
+        if name.startswith("z1~"):
+            return False
         return name in self._sponsored_streams
 
 def crawl_sponsored(sponsors, write_key):
